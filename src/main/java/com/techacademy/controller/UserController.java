@@ -51,15 +51,24 @@ public class UserController {
 
     @GetMapping("/update/{id}/")
     public String getUser(@PathVariable("id") Integer id,Model model) {
-        model.addAttribute("user",service.getUser(id));
+        if(id!=null) {
+            model.addAttribute("user",service.getUser(id));
+        }
         return "user/update";
     }
 
+
+
     @PostMapping("/update/{id}/")
-    public String postUser(User user) {
-    service.saveUser(user);
-    return "redirect:/user/list";
-    }
+    public String postUser(@Validated User user, BindingResult res,Model model) {
+        if(res.hasErrors()) {
+            model.addAttribute("user", user);
+            return getUser(null,model);
+        }
+
+        service.saveUser(user);
+        return "redirect:/user/list";
+        }
 
     @PostMapping(path="list",params="deleteRun")
     public String deleteRun(@RequestParam(name="idck") Set<Integer> idck,Model model) {
